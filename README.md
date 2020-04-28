@@ -1,8 +1,5 @@
 
-Quick thoughts regarding my implementation:
-- Since the task is so small and I've no business domain knowledge 
-about the insurance business, So It made sense for me to start with CRUD based design but doesn't hurt 
-using some ddd tactical patterns like value object.
+#Quick thoughts regarding my implementation:
 
 - I choosed mongoDB for storage since there is no complex object graph needs to be persisted as tables with relations 
 and queried based on alot of criterias and joins.
