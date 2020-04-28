@@ -1,0 +1,55 @@
+version: '3.6'
+
+services:
+  elements_mongodb:
+    image: mongo
+    container_name: elements_mongodb
+    ports:
+      - 27017:27017
+
+    volumes:
+      - mongodb:/data/db
+      - mongoconfig:/data/configdb
+    networks:
+      - mongo_net
+
+  elements-spring-boot:
+    image: elements-spring-boot-mongodb
+    container_name: elements-spring-boot
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+#      - SPRING_PROFILES_ACTIVE=dev
+      - spring.data.mongodb.database=elements
+      - spring.data.mongodb.host=elements_mongodb
+      - spring.data.mongodb.port=27017
+      - spring.data.mongodb.uri=mongodb://elements_mongodb:27017
+    volumes:
+      - javatmp:/tmp
+    networks:
+      - mongo_net
+    depends_on:
+      - elements_mongodb
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheusElements
+    ports:
+      - 9090:9090
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - mongo_net
+    depends_on:
+      - elements-spring-boot
+volumes:
+  mongodb:
+  mongoconfig:
+  javatmp:
+
+networks:
+  mongo_net:
+    driver: bridge
